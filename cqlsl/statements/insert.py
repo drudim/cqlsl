@@ -1,4 +1,4 @@
-from statements import BaseStatement
+from base import BaseStatement
 
 
 __all__ = ['insert']

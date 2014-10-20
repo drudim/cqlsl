@@ -2,8 +2,7 @@
 from unittest import TestCase
 from uuid import uuid4
 from sessions import SyncSession
-from statements import select
-from statements.insert import insert
+from statements import select, insert
 
 
 __all__ = ['InsertStatementTest']
@@ -11,7 +10,7 @@ __all__ = ['InsertStatementTest']
 
 class InsertStatementTest(TestCase):
     def setUp(self):
-        self.session = SyncSession()
+        self.session = SyncSession(keyspace='cqlsl')
         self.session.execute_raw(
             '''
             CREATE TABLE insert_stmt_test (

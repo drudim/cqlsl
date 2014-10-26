@@ -17,11 +17,11 @@ class InsertStatement(BaseStatement):
 
     @property
     def query(self):
-        return 'INSERT INTO %(table)s (%(keys)s) VALUES (%(values)s)' % {
-            'table': self.table_name,
-            'keys': ', '.join(self.values_kwargs.keys()),
-            'values': ', '.join(repeat('%s', len(self.values_kwargs)))
-        }
+        return 'INSERT INTO {table} ({keys}) VALUES ({values})'.format(
+            table=self.table_name,
+            keys=', '.join(self.values_kwargs.keys()),
+            values=', '.join(repeat('%s', len(self.values_kwargs)))
+        )
 
     @property
     def context(self):

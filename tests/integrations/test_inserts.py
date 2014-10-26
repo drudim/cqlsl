@@ -64,4 +64,4 @@ class InsertsTest(TestCase):
         self.assertTypeRestored('test_list', ['a', 'b', 'c'])
 
     def test_insert_set(self):
-        self.assertTypeRestored('test_set', {1.1, 1.2, 1.3})
+        self.assertTypeRestored('test_set', {1, 2, 3})

@@ -22,7 +22,7 @@ class InsertsTest(TestCase):
                 test_list list<text>,
                 test_set set<float>,
                 PRIMARY KEY (test_id)
-            );
+            )
             '''
         )
 
@@ -34,7 +34,7 @@ class InsertsTest(TestCase):
         values['test_id'] = values.get('test_id', uuid4())
         self.session.execute(insert('insert_stmt_test').values(**values))
 
-        restored_value = self.session.execute_raw('select {} from insert_stmt_test'.format(column))[0][column]
+        restored_value = self.session.execute_raw('SELECT {} FROM insert_stmt_test'.format(column))[0][column]
 
         if special_assert:
             special_assert(expected_value, restored_value)

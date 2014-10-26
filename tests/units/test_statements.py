@@ -16,11 +16,17 @@ class StatementsTest(TestCase):
         )
         self.assertEqual((1, ValueSequence([2, 3, 4]), 'New title'), stmt.context)
 
-    def test_delete_fields(self):
-        stmt = delete('test_table').fields('some_number', 'some_string')
+    def test_delete(self):
+        stmt = delete('test_table').where(some_id=1)
 
-        self.assertEqual('DELETE some_number, some_string FROM test_table', stmt.query)
-        self.assertEqual((), stmt.context)
+        self.assertEqual('DELETE  FROM test_table WHERE some_id = %s', stmt.query)
+        self.assertEqual((1,), stmt.context)
+
+    def test_delete_fields(self):
+        stmt = delete('test_table').fields('some_number', 'some_string').where(some_id=1)
+
+        self.assertEqual('DELETE some_number, some_string FROM test_table WHERE some_id = %s', stmt.query)
+        self.assertEqual((1,), stmt.context)
 
     def test_delete_with_where(self):
         stmt = delete('test_table').fields('some_number').where(some_id=1)
@@ -29,19 +35,19 @@ class StatementsTest(TestCase):
         self.assertEqual((1,), stmt.context)
 
     def test_map_item_delete(self):
-        stmt = delete('test_table').fields('some_map__some_field')
+        stmt = delete('test_table').fields(some_map__keys=('some_field',)).where(some_id=1)
 
-        self.assertEqual('DELETE some_map[%s] FROM test_table', stmt.query)
-        self.assertEqual(('some_field',), stmt.context)
+        self.assertEqual('DELETE some_map[%s] FROM test_table WHERE some_id = %s', stmt.query)
+        self.assertEqual(('some_field', 1), stmt.context)
 
     def test_map_multiple_item_delete(self):
-        stmt = delete('test_table').fields(some_map__keys=('some_field', 'other_field'))
+        stmt = delete('test_table').fields(some_map__keys=('some_field', 'other_field')).where(some_id=1)
 
-        self.assertEqual('DELETE some_map[%s], some_map[%s] FROM test_table', stmt.query)
-        self.assertEqual(('some_field', 'other_field'), stmt.context)
+        self.assertEqual('DELETE some_map[%s], some_map[%s] FROM test_table WHERE some_id = %s', stmt.query)
+        self.assertEqual(('some_field', 'other_field', 1), stmt.context)
 
     def test_list_item_delete(self):
-        stmt = delete('test_table').fields(some_list__indexes=(3, 4))
+        stmt = delete('test_table').fields(some_list__indexes=(3, 4)).where(some_id=1)
 
-        self.assertEqual('DELETE some_list[%s], some_list[%s] FROM test_table', stmt.query)
-        self.assertEqual((3, 4), stmt.context)
+        self.assertEqual('DELETE some_list[%s], some_list[%s] FROM test_table WHERE some_id = %s', stmt.query)
+        self.assertEqual((3, 4, 1), stmt.context)

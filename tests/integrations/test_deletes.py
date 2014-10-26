@@ -29,7 +29,7 @@ class DeletesTest(TestCase):
         self.assertEqual({'a': 1}, self.session.execute_raw('SELECT * FROM delete_stmt_test')[0].get('test_map'))
         self.assertEqual('test_1', self.session.execute_raw('SELECT * FROM delete_stmt_test')[0].get('test_text'))
 
-        self.session.execute(delete('delete_stmt_test').fields('test_map'))
+        self.session.execute(delete('delete_stmt_test').fields('test_map').where(test_id=1))
 
         self.assertIsNone(self.session.execute_raw('SELECT * FROM delete_stmt_test')[0].get('test_map'))
         self.assertEqual('test_1', self.session.execute_raw('SELECT * FROM delete_stmt_test')[0].get('test_text'))
@@ -55,7 +55,7 @@ class DeletesTest(TestCase):
             self.session.execute_raw('SELECT * FROM delete_stmt_test')[0].get('test_map')
         )
 
-        self.session.execute(delete('delete_stmt_test').fields(test_map__keys=('b', 'c')))
+        self.session.execute(delete('delete_stmt_test').fields(test_map__keys=('b', 'c')).where(test_id=1))
 
         self.assertEqual(
             {'a': 1},
@@ -72,7 +72,7 @@ class DeletesTest(TestCase):
             self.session.execute_raw('SELECT * FROM delete_stmt_test')[0].get('test_list')
         )
 
-        self.session.execute(delete('delete_stmt_test').fields(test_list__indexes=(1, 3)))
+        self.session.execute(delete('delete_stmt_test').fields(test_list__indexes=(1, 3)).where(test_id=1))
 
         self.assertEqual(
             ['a', 'c'],

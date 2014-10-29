@@ -1,6 +1,6 @@
 import collections
+from cqlsl.utils import sorted_kwargs
 from cassandra.query import ValueSequence
-from utils import sorted_kwargs
 
 
 class BaseStatement(object):

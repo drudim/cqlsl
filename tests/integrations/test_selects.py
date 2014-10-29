@@ -1,5 +1,5 @@
-from sessions import SyncSession
-from statements import select
+from cqlsl.sessions import SyncSession
+from cqlsl.statements import select
 from tests.base import CqlslTestCase
 
 

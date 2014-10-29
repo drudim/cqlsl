@@ -1,7 +1,7 @@
 import logging
 from cassandra.cluster import Cluster
 from cassandra.query import dict_factory
-from statements.base import BaseStatement
+from cqlsl.statements.base import BaseStatement
 
 
 __all__ = ['SyncSession']

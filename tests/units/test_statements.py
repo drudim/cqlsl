@@ -1,5 +1,5 @@
 from cassandra.encoder import ValueSequence
-from statements import insert, delete, update, select
+from cqlsl.statements import insert, delete, update, select
 from tests.base import CqlslTestCase
 
 

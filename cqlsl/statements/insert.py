@@ -1,6 +1,6 @@
 from itertools import repeat
+from cqlsl.utils import sorted_kwargs
 from base import BaseStatement
-from utils import sorted_kwargs
 
 
 __all__ = ['insert']

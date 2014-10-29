@@ -1,7 +1,7 @@
 # coding=utf-8
 from uuid import uuid4
-from sessions import SyncSession
-from statements import insert
+from cqlsl.sessions import SyncSession
+from cqlsl.statements import insert
 from tests.base import CqlslTestCase
 
 

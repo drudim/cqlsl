@@ -1,17 +1,17 @@
 # coding=utf-8
-from unittest import TestCase
 from uuid import uuid4
 from sessions import SyncSession
 from statements import insert
+from tests.base import CqlslTestCase
 
 
 __all__ = ['InsertsTest']
 
 
-class InsertsTest(TestCase):
+class InsertsTest(CqlslTestCase):
     def setUp(self):
         self.session = SyncSession(keyspace='cqlsl')
-        self.session.execute_raw(
+        self.session.execute(
             '''
             CREATE TABLE insert_stmt_test (
                 test_id uuid,
@@ -27,14 +27,14 @@ class InsertsTest(TestCase):
         )
 
     def tearDown(self):
-        self.session.execute_raw('DROP TABLE insert_stmt_test')
+        self.session.execute('DROP TABLE insert_stmt_test')
 
     def assertTypeRestored(self, column, expected_value, special_assert=None):
         values = {column: expected_value}
         values['test_id'] = values.get('test_id', uuid4())
         self.session.execute(insert('insert_stmt_test').values(**values))
 
-        restored_value = self.session.execute_raw('SELECT {} FROM insert_stmt_test'.format(column))[0][column]
+        restored_value = self.session.execute('SELECT {} FROM insert_stmt_test'.format(column))[0][column]
 
         if special_assert:
             special_assert(expected_value, restored_value)

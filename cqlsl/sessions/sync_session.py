@@ -1,8 +1,12 @@
+import logging
 from cassandra.cluster import Cluster
 from cassandra.query import dict_factory
+from statements.base import BaseStatement
 
 
 __all__ = ['SyncSession']
+
+log = logging.getLogger('cqlsl.queries')
 
 
 class SyncSession(object):
@@ -10,8 +14,10 @@ class SyncSession(object):
         self.session = Cluster(['localhost']).connect(keyspace)
         self.session.row_factory = dict_factory
 
-    def execute(self, statement):
-        return self.session.execute(statement.query, statement.context)
+    def execute(self, query, context=None):
+        if isinstance(query, BaseStatement):
+            query, context = query.query, query.context
 
-    def execute_raw(self, raw_query):
-        return self.session.execute(raw_query)
+        log.debug('Executing {} with next context: {}'.format(query, context))
+
+        return self.session.execute(query, context)

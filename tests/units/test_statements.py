@@ -1,12 +1,12 @@
-from unittest import TestCase
 from cassandra.encoder import ValueSequence
 from statements import insert, delete, update
+from tests.base import CqlslTestCase
 
 
 __all__ = ['StatementsTest']
 
 
-class StatementsTest(TestCase):
+class StatementsTest(CqlslTestCase):
     def test_insert(self):
         stmt = insert('test_table').values(some_string='New title', some_number=1, some_numbers=[2, 3, 4])
 
@@ -113,7 +113,7 @@ class StatementsTest(TestCase):
         self.assertEqual((['a'],), stmt.context)
 
     def test_update_list_insert(self):
-        stmt = update('test_table').set(some_list__insert__2=['a'])
+        stmt = update('test_table').set(some_list__insert__2='a')
 
         self.assertEqual('UPDATE test_table SET some_list[2] = %s', stmt.query)
         self.assertEqual(('a',), stmt.context)

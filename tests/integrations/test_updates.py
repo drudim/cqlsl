@@ -1,17 +1,16 @@
-from unittest import TestCase
 from sessions import SyncSession
 from statements import update
+from tests.base import CqlslTestCase
 
 
-class UpdatesTest(TestCase):
+class UpdatesTest(CqlslTestCase):
     def setUp(self):
         self.session = SyncSession(keyspace='cqlsl')
-        self.session.execute_raw(
+        self.session.execute(
             '''
             CREATE TABLE update_stmt_test (
                 test_id int,
                 test_text text,
-                test_int int,
                 test_set set<text>,
                 test_map map<text,int>,
                 test_list list<text>,
@@ -21,117 +20,103 @@ class UpdatesTest(TestCase):
         )
 
     def tearDown(self):
-        self.session.execute_raw('DROP TABLE update_stmt_test')
+        self.session.execute('DROP TABLE update_stmt_test')
 
     def test_update(self):
-        self.session.execute_raw("INSERT INTO update_stmt_test (test_id, test_text) VALUES (1, 'some text')")
-        self.session.execute_raw("INSERT INTO update_stmt_test (test_id, test_text) VALUES (2, 'another text')")
+        self.session.execute("INSERT INTO update_stmt_test (test_id, test_text) VALUES (1, 'some text')")
+        self.session.execute("INSERT INTO update_stmt_test (test_id, test_text) VALUES (2, 'another text')")
 
-        self.assertEqual(
+        self.assertItemsEqual(
             ('some text', 'another text'),
-            map(lambda x: x.get('test_text'), self.session.execute_raw('SELECT test_text FROM update_stmt_test')),
+            map(lambda x: x.get('test_text'), self.session.execute('SELECT test_text FROM update_stmt_test')),
         )
-        self.session.execute(update('update_stmt_test').set(test_text='updated text'))
-        self.assertEqual(
+        self.session.execute(update('update_stmt_test').set(test_text='updated text').where(test_id__in=(1,2)))
+        self.assertItemsEqual(
             ('updated text', 'updated text'),
-            map(lambda x: x.get('test_text'), self.session.execute_raw('SELECT test_text FROM update_stmt_test')),
+            map(lambda x: x.get('test_text'), self.session.execute('SELECT test_text FROM update_stmt_test')),
         )
 
     def test_update_with_where(self):
-        self.session.execute_raw("INSERT INTO update_stmt_test (test_id, test_text) VALUES (1, 'some text')")
-        self.session.execute_raw("INSERT INTO update_stmt_test (test_id, test_text) VALUES (2, 'another text')")
+        self.session.execute("INSERT INTO update_stmt_test (test_id, test_text) VALUES (1, 'some text')")
+        self.session.execute("INSERT INTO update_stmt_test (test_id, test_text) VALUES (2, 'another text')")
 
-        self.assertEqual(
+        self.assertItemsEqual(
             ('some text', 'another text'),
-            map(lambda x: x.get('test_text'), self.session.execute_raw('SELECT test_text FROM update_stmt_test')),
+            map(lambda x: x.get('test_text'), self.session.execute('SELECT test_text FROM update_stmt_test')),
         )
         self.session.execute(update('update_stmt_test').set(test_text='updated text').where(test_id=1))
         self.assertItemsEqual(
             ('updated text', 'another text'),
-            map(lambda x: x.get('test_text'), self.session.execute_raw('SELECT test_text FROM update_stmt_test')),
+            map(lambda x: x.get('test_text'), self.session.execute('SELECT test_text FROM update_stmt_test')),
         )
 
-    def test_update_counter_increment(self):
-        self.session.execute_raw("INSERT INTO update_stmt_test (test_id, test_text) VALUES (1, 5)")
-
-        self.assertEqual(5, self.session.execute_raw('SELECT test_int FROM update_stmt_test')[0].get('test_int'))
-        self.session.execute(update('update_stmt_test').set(test_int__inc=2))
-        self.assertEqual(7, self.session.execute_raw('SELECT test_int FROM update_stmt_test')[0].get('test_int'))
-
-    def test_update_counter_decrement(self):
-        self.session.execute_raw("INSERT INTO update_stmt_test (test_id, test_text) VALUES (1, 5)")
-
-        self.assertEqual(5, self.session.execute_raw('SELECT test_int FROM update_stmt_test')[0].get('test_int'))
-        self.session.execute(update('update_stmt_test').set(test_int__dec=2))
-        self.assertEqual(3, self.session.execute_raw('SELECT test_int FROM update_stmt_test')[0].get('test_int'))
-
     def test_update_set_add(self):
-        self.session.execute_raw("INSERT INTO update_stmt_test (test_id, test_set) VALUES (1, {'a'})")
+        self.session.execute("INSERT INTO update_stmt_test (test_id, test_set) VALUES (1, {'a'})")
 
-        self.assertEqual({'a'}, self.session.execute_raw('SELECT test_int FROM update_stmt_test')[0].get('test_set'))
-        self.session.execute(update('update_stmt_test').set(test_set__add={'b'}))
+        self.assertEqual({'a'}, self.session.execute('SELECT test_set FROM update_stmt_test')[0].get('test_set'))
+        self.session.execute(update('update_stmt_test').set(test_set__add={'b'}).where(test_id=1))
         self.assertEqual(
-            {'a', 'b'}, self.session.execute_raw('SELECT test_int FROM update_stmt_test')[0].get('test_set')
+            {'a', 'b'}, self.session.execute('SELECT test_set FROM update_stmt_test')[0].get('test_set')
         )
 
     def test_update_set_remove(self):
-        self.session.execute_raw("INSERT INTO update_stmt_test (test_id, test_set) VALUES (1, {'a'})")
+        self.session.execute("INSERT INTO update_stmt_test (test_id, test_set) VALUES (1, {'a', 'b'})")
 
-        self.assertEqual({'a'}, self.session.execute_raw('SELECT test_int FROM update_stmt_test')[0].get('test_set'))
-        self.session.execute(update('update_stmt_test').set(test_set__remove={'b'}))
-        self.assertEqual(set(), self.session.execute_raw('SELECT test_int FROM update_stmt_test')[0].get('test_set'))
+        self.assertEqual({'a', 'b'}, self.session.execute('SELECT test_set FROM update_stmt_test')[0].get('test_set'))
+        self.session.execute(update('update_stmt_test').set(test_set__remove={'a'}).where(test_id=1))
+        self.assertEqual({'b'}, self.session.execute('SELECT test_set FROM update_stmt_test')[0].get('test_set'))
 
     def test_update_dict_update(self):
-        self.session.execute_raw(
+        self.session.execute(
             "INSERT INTO update_stmt_test (test_id, test_map) VALUES (1, {'a': 1, 'b': 2, 'c': 3})"
         )
 
         self.assertEqual(
             {'a': 1, 'b': 2, 'c': 3},
-            self.session.execute_raw('SELECT test_map FROM update_stmt_test')[0].get('test_map')
+            self.session.execute('SELECT test_map FROM update_stmt_test')[0].get('test_map')
         )
-        self.session.execute(update('update_stmt_test').set(test_map__update={'a': 4, 'b': 5}))
+        self.session.execute(update('update_stmt_test').set(test_map__update={'a': 4, 'b': 5}).where(test_id=1))
         self.assertEqual(
             {'a': 4, 'b': 5, 'c': 3},
-            self.session.execute_raw('SELECT test_map FROM update_stmt_test')[0].get('test_map')
+            self.session.execute('SELECT test_map FROM update_stmt_test')[0].get('test_map')
         )
 
     def test_update_list_prepend(self):
-        self.session.execute_raw("INSERT INTO update_stmt_test (test_id, test_list) VALUES (1, ['a']})")
+        self.session.execute("INSERT INTO update_stmt_test (test_id, test_list) VALUES (1, ['a'])")
 
-        self.assertEqual(['a'], self.session.execute_raw('SELECT test_map FROM update_stmt_test')[0].get('test_list'))
-        self.session.execute(update('update_stmt_test').set(test_list__prepend=['b']))
+        self.assertEqual(['a'], self.session.execute('SELECT test_list FROM update_stmt_test')[0].get('test_list'))
+        self.session.execute(update('update_stmt_test').set(test_list__prepend=['b']).where(test_id=1))
         self.assertEqual(
-            ['b', 'a'], self.session.execute_raw('SELECT test_list FROM update_stmt_test')[0].get('test_list')
+            ['b', 'a'], self.session.execute('SELECT test_list FROM update_stmt_test')[0].get('test_list')
         )
 
     def test_update_list_append(self):
-        self.session.execute_raw("INSERT INTO update_stmt_test (test_id, test_list) VALUES (1, ['a']})")
+        self.session.execute("INSERT INTO update_stmt_test (test_id, test_list) VALUES (1, ['a'])")
 
-        self.assertEqual(['a'], self.session.execute_raw('SELECT test_list FROM update_stmt_test')[0].get('test_list'))
-        self.session.execute(update('update_stmt_test').set(test_list__append=['b']))
+        self.assertEqual(['a'], self.session.execute('SELECT test_list FROM update_stmt_test')[0].get('test_list'))
+        self.session.execute(update('update_stmt_test').set(test_list__append=['b']).where(test_id=1))
         self.assertEqual(
-            ['a', 'b'], self.session.execute_raw('SELECT test_list FROM update_stmt_test')[0].get('test_list')
+            ['a', 'b'], self.session.execute('SELECT test_list FROM update_stmt_test')[0].get('test_list')
         )
 
     def test_update_list_insert(self):
-        self.session.execute_raw("INSERT INTO update_stmt_test (test_id, test_list) VALUES (1, ['a', 'b']})")
+        self.session.execute("INSERT INTO update_stmt_test (test_id, test_list) VALUES (1, ['a', 'b'])")
 
         self.assertEqual(
-            ['a', 'b'], self.session.execute_raw('SELECT test_list FROM update_stmt_test')[0].get('test_list')
+            ['a', 'b'], self.session.execute('SELECT test_list FROM update_stmt_test')[0].get('test_list')
         )
-        self.session.execute(update('update_stmt_test').set(test_list__insert__1=['c']))
+        self.session.execute(update('update_stmt_test').set(test_list__insert__1='c').where(test_id=1))
         self.assertEqual(
-            ['a', 'c'], self.session.execute_raw('SELECT test_list FROM update_stmt_test')[0].get('test_list')
+            ['a', 'c'], self.session.execute('SELECT test_list FROM update_stmt_test')[0].get('test_list')
         )
 
     def test_update_list_remove(self):
-        self.session.execute_raw("INSERT INTO update_stmt_test (test_id, test_list) VALUES (1, ['a', 'b', 'a']})")
+        self.session.execute("INSERT INTO update_stmt_test (test_id, test_list) VALUES (1, ['a', 'b', 'a'])")
 
         self.assertEqual(
-            ['a', 'b', 'a'], self.session.execute_raw('SELECT test_map FROM update_stmt_test')[0].get('test_list')
+            ['a', 'b', 'a'], self.session.execute('SELECT test_list FROM update_stmt_test')[0].get('test_list')
         )
-        self.session.execute(update('update_stmt_test').set(test_list__remove=['a']))
+        self.session.execute(update('update_stmt_test').set(test_list__remove=['a']).where(test_id=1))
         self.assertEqual(
-            ['b'], self.session.execute_raw('SELECT test_list FROM update_stmt_test')[0].get('test_list')
+            ['b'], self.session.execute('SELECT test_list FROM update_stmt_test')[0].get('test_list')
         )

@@ -1,5 +1,5 @@
 from cassandra.encoder import ValueSequence
-from statements import insert, delete, update
+from statements import insert, delete, update, select
 from tests.base import CqlslTestCase
 
 
@@ -15,6 +15,30 @@ class StatementsTest(CqlslTestCase):
             stmt.query
         )
         self.assertEqual((1, ValueSequence([2, 3, 4]), 'New title'), stmt.context)
+
+    def test_select_all(self):
+        stmt = select('test_table')
+
+        self.assertEqual('SELECT * FROM test_table', stmt.query)
+        self.assertEqual(tuple(), stmt.context)
+
+    def test_select_fields(self):
+        stmt = select('test_table').fields('some_number', 'some_string')
+
+        self.assertEqual('SELECT some_number, some_string FROM test_table', stmt.query)
+        self.assertEqual(tuple(), stmt.context)
+
+    def test_select_with_where(self):
+        stmt = select('test_table').where(test_id=1)
+
+        self.assertEqual('SELECT * FROM test_table WHERE test_id = %s', stmt.query)
+        self.assertEqual((1,), stmt.context)
+
+    def test_select_with_limit(self):
+        stmt = select('test_table').limit(10)
+
+        self.assertEqual('SELECT * FROM test_table LIMIT %s', stmt.query)
+        self.assertEqual((10,), stmt.context)
 
     def test_delete(self):
         stmt = delete('test_table').where(some_id=1)

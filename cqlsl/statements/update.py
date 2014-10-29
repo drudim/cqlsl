@@ -1,3 +1,4 @@
+from itertools import chain
 from base import BaseStatement, WhereClauseMixin
 from utils import sorted_kwargs
 
@@ -10,7 +11,6 @@ class UpdateStatement(BaseStatement, WhereClauseMixin):
         BaseStatement.__init__(self, *args, **kwargs)
         WhereClauseMixin.__init__(self)
         self._set_values = {}
-        self._context_values = []
 
     def set(self, **values):
         self._set_values = sorted_kwargs(**values)
@@ -21,16 +21,19 @@ class UpdateStatement(BaseStatement, WhereClauseMixin):
         if not self._where_conditions:
             raise Exception('WHERE is mandatory for UPDATE statement.')
 
-        self._context_values = []
+        return 'UPDATE {table} SET {set_clause} WHERE {where_clause}'.format(
+            table=self.table_name,
+            set_clause=self._get_set_clause(),
+            where_clause=self._get_where_clause(),
+        )
 
-        # Generate set values
+    @property
+    def context(self):
+        return self._get_set_context() + self._get_where_context()
+
+    def _get_set_clause(self):
         set_items = []
-        for field, value in self._set_values.items():
-            try:
-                field, modifier = field.split('__', 1)
-            except ValueError:
-                modifier = ''
-
+        for field, modifier, value in self._unpack_set_items():
             if modifier in ('add', 'append'):
                 set_items.append('{field} = {field} + %s'.format(field=field))
             elif modifier == 'remove':
@@ -41,28 +44,29 @@ class UpdateStatement(BaseStatement, WhereClauseMixin):
                 index = int(modifier.replace('insert__', ''))
                 set_items.append('{field}[{index}] = %s'.format(field=field, index=index))
             elif modifier == 'update' and isinstance(value, dict):
-                for dict_key, dict_value in value.items():
-                    set_items.append('{field}[%s] = %s'.format(field=field))
-                    self._context_values.append(dict_key)
-                    self._context_values.append(dict_value)
-                continue
+                set_items += ['{field}[%s] = %s'.format(field=field)] * len(value.items())
             else:
                 set_items.append('{field} = %s'.format(field=field))
 
-            self._context_values.append(value)
+        return ', '.join(set_items)
 
-        query = 'UPDATE {table} SET {set_clause}'.format(
-            table=self.table_name,
-            set_clause=', '.join(set_items),
-        )
+    def _get_set_context(self):
+        context = []
+        for field, modifier, value in self._unpack_set_items():
+            if modifier == 'update' and isinstance(value, dict):
+                context += list(chain(*value.items()))
+            else:
+                context.append(value)
 
-        if self._where_conditions:
-            query += ' WHERE {where_clause}'.format(where_clause=self._get_where_clause())
+        return tuple(context)
 
-        return query
+    def _unpack_set_items(self):
+        for field, value in self._set_values.items():
+            try:
+                field, modifier = field.split('__', 1)
+            except ValueError:
+                modifier = ''
 
-    @property
-    def context(self):
-        return self.query and tuple(self._context_values) + self._get_where_context()
+            yield field, modifier, value
 
 update = UpdateStatement

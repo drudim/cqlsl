@@ -8,7 +8,7 @@ class UpdatesTest(CqlslTestCase):
         self.session = SyncSession(keyspace='cqlsl')
         self.session.execute(
             '''
-            CREATE TABLE update_stmt_test (
+            CREATE TABLE IF NOT EXISTS update_stmt_test (
                 test_id int,
                 test_text text,
                 test_set set<text>,

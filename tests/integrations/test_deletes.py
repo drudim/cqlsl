@@ -8,7 +8,7 @@ class DeletesTest(CqlslTestCase):
         self.session = SyncSession(keyspace='cqlsl')
         self.session.execute(
             '''
-            CREATE TABLE delete_stmt_test (
+            CREATE TABLE IF NOT EXISTS delete_stmt_test (
                 test_id int,
                 test_text text,
                 test_map map<text,int>,

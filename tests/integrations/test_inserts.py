@@ -13,7 +13,7 @@ class InsertsTest(CqlslTestCase):
         self.session = SyncSession(keyspace='cqlsl')
         self.session.execute(
             '''
-            CREATE TABLE insert_stmt_test (
+            CREATE TABLE IF NOT EXISTS insert_stmt_test (
                 test_id uuid,
                 test_text text,
                 test_int int,

@@ -52,74 +52,56 @@ class StatementsTest(CqlslTestCase):
         self.assertEqual('DELETE some_list[%s], some_list[%s] FROM test_table WHERE some_id = %s', stmt.query)
         self.assertEqual((3, 4, 1), stmt.context)
 
-    def test_update_without_where(self):
-        stmt = update('test_table').set(title='New title', tags=['a', 'b', 'c'])
-
-        self.assertEqual('UPDATE test_table SET tags = %s, title = %s', stmt.query)
-        self.assertEqual((ValueSequence(['a', 'b', 'c']), 'New title'), stmt.context)
-
     def test_update_with_where(self):
         stmt = update('test_table').set(title='New title').where(id__in=['a', 'b', 'c'])
 
         self.assertEqual('UPDATE test_table SET title = %s WHERE id IN %s', stmt.query)
         self.assertEqual(('New title', ValueSequence(['a', 'b', 'c'])), stmt.context)
 
-    def test_update_counter_increment(self):
-        stmt = update('test_table').set(counter__inc=1)
-
-        self.assertEqual('UPDATE test_table SET counter = counter + %s', stmt.query)
-        self.assertEqual((1,), stmt.context)
-
-    def test_update_counter_decrement(self):
-        stmt = update('test_table').set(counter__dec=1)
-
-        self.assertEqual('UPDATE test_table SET counter = counter - %s', stmt.query)
-        self.assertEqual((1,), stmt.context)
-
     def test_update_set_add(self):
-        stmt = update('test_table').set(some_set__add={'a'})
+        stmt = update('test_table').set(some_set__add={'a'}).where(some_id=1)
 
-        self.assertEqual('UPDATE test_table SET some_set = some_set + %s', stmt.query)
-        self.assertEqual(({'a'},), stmt.context)
+        self.assertEqual('UPDATE test_table SET some_set = some_set + %s WHERE some_id = %s', stmt.query)
+        self.assertEqual(({'a'}, 1), stmt.context)
 
     def test_update_set_remove(self):
-        stmt = update('test_table').set(some_set__remove={'a'})
+        stmt = update('test_table').set(some_set__remove={'a'}).where(some_id=1)
 
-        self.assertEqual('UPDATE test_table SET some_set = some_set - %s', stmt.query)
-        self.assertEqual(({'a'},), stmt.context)
+        self.assertEqual('UPDATE test_table SET some_set = some_set - %s WHERE some_id = %s', stmt.query)
+        self.assertEqual(({'a'}, 1), stmt.context)
 
     def test_update_dict(self):
-        stmt = update('test_table').set(some_dict={'a': 1, 'b': 2})
+        stmt = update('test_table').set(some_dict={'a': 1, 'b': 2}).where(some_id=1)
 
-        self.assertEqual('UPDATE test_table SET some_dict = %s', stmt.query)
-        self.assertEqual(({'a': 1, 'b': 2},), stmt.context)
+        self.assertEqual('UPDATE test_table SET some_dict = %s WHERE some_id = %s', stmt.query)
+        self.assertEqual(({'a': 1, 'b': 2}, 1), stmt.context)
 
     def test_update_dict_update(self):
-        stmt = update('test_table').set(some_dict__update={'a': 1, 'b': 2})
+        stmt = update('test_table').set(some_dict__update={'a': 1, 'b': 2}).where(some_id=1)
 
-        self.assertEqual('UPDATE test_table SET some_dict[%s] = %s, some_dict[%s] = %s', stmt.query)
-        self.assertEqual(('a', 1, 'b', 2), stmt.context)
+        self.assertEqual('UPDATE test_table SET some_dict[%s] = %s, some_dict[%s] = %s WHERE some_id = %s', stmt.query)
+        self.assertEqual(('a', 1, 'b', 2, 1), stmt.context)
 
     def test_update_list_prepend(self):
-        stmt = update('test_table').set(some_list__prepend=['a'])
+        stmt = update('test_table').set(some_list__prepend=['a']).where(some_id=1)
 
-        self.assertEqual('UPDATE test_table SET some_list = %s + some_list', stmt.query)
-        self.assertEqual((['a'],), stmt.context)
+        self.assertEqual('UPDATE test_table SET some_list = %s + some_list WHERE some_id = %s', stmt.query)
+        self.assertEqual((['a'], 1), stmt.context)
 
     def test_update_list_append(self):
-        stmt = update('test_table').set(some_list__append=['a'])
+        stmt = update('test_table').set(some_list__append=['a']).where(some_id=1)
 
-        self.assertEqual('UPDATE test_table SET some_list = some_list + %s', stmt.query)
-        self.assertEqual((['a'],), stmt.context)
+        self.assertEqual('UPDATE test_table SET some_list = some_list + %s WHERE some_id = %s', stmt.query)
+        self.assertEqual((['a'], 1), stmt.context)
 
     def test_update_list_insert(self):
-        stmt = update('test_table').set(some_list__insert__2='a')
+        stmt = update('test_table').set(some_list__insert__2='a').where(some_id=1)
 
-        self.assertEqual('UPDATE test_table SET some_list[2] = %s', stmt.query)
-        self.assertEqual(('a',), stmt.context)
+        self.assertEqual('UPDATE test_table SET some_list[2] = %s WHERE some_id = %s', stmt.query)
+        self.assertEqual(('a', 1), stmt.context)
 
     def test_update_list_remove(self):
-        stmt = update('test_table').set(some_list__remove=['a'])
+        stmt = update('test_table').set(some_list__remove=['a']).where(some_id=1)
 
-        self.assertEqual('UPDATE test_table SET some_list = some_list - %s', stmt.query)
-        self.assertEqual((['a'],), stmt.context)
+        self.assertEqual('UPDATE test_table SET some_list = some_list - %s WHERE some_id = %s', stmt.query)
+        self.assertEqual((['a'], 1), stmt.context)

@@ -1,25 +1,19 @@
-import collections
-from cassandra.query import ValueSequence
-from base import BaseStatement
+from base import BaseStatement, WhereClauseMixin
 from utils import sorted_kwargs
 
 
 __all__ = ['update']
 
 
-class UpdateStatement(BaseStatement):
+class UpdateStatement(BaseStatement, WhereClauseMixin):
     def __init__(self, *args, **kwargs):
-        super(UpdateStatement, self).__init__(*args, **kwargs)
+        BaseStatement.__init__(self, *args, **kwargs)
+        WhereClauseMixin.__init__(self)
         self._set_values = {}
-        self._where_conditions = {}
         self._context_values = []
 
     def set(self, **values):
         self._set_values = sorted_kwargs(**values)
-        return self
-
-    def where(self, **conditions):
-        self._where_conditions = sorted_kwargs(**conditions)
         return self
 
     @property
@@ -57,32 +51,18 @@ class UpdateStatement(BaseStatement):
 
             self._context_values.append(value)
 
-        # Generate where clause
-        where_items = []
-        for (field_name, value) in self._where_conditions.items():
-            if field_name.endswith('__in'):
-                field_name = field_name.replace('__in', '')
-                where_items.append('{} IN %s'.format(field_name))
-            else:
-                where_items.append('{} = %s'.format(field_name))
-
-            if isinstance(value, collections.Iterable) and not isinstance(value, basestring):
-                value = ValueSequence(value)
-
-            self._context_values.append(value)
-
         query = 'UPDATE {table} SET {set_clause}'.format(
             table=self.table_name,
             set_clause=', '.join(set_items),
         )
 
-        if where_items:
-            query += ' WHERE {where_clause}'.format(where_clause=' AND '.join(where_items))
+        if self._where_conditions:
+            query += ' WHERE {where_clause}'.format(where_clause=self._get_where_clause())
 
         return query
 
     @property
     def context(self):
-        return self.query and tuple(self._context_values)
+        return self.query and tuple(self._context_values) + self._get_where_context()
 
 update = UpdateStatement

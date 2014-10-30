@@ -5,7 +5,7 @@ env:
   - CASSANDRA_VERSION=21
 
 python:
-  - "2.7"
+  - 2.7
 
 before_install:
   - sudo echo "deb http://www.apache.org/dist/cassandra/debian ${CASSANDRA_VERSION}x main" | sudo tee -a /etc/apt/sources.list
@@ -22,10 +22,12 @@ before_install:
   - sudo sh -c "echo 'JVM_OPTS=\"\${JVM_OPTS} -Djava.net.preferIPv4Stack=false\"' >> /etc/cassandra/cassandra-env.sh"
   - sudo service cassandra start
 
-before_script: sleep 10
+before_script:
+  - sleep 5  # TODO: Need to improve this somehow (Cassandra has start up delay...)
+  - cqlsh -e "create keyspace natural with replication={'class': 'SimpleStrategy', 'replication_factor': 1};"
 
 install:
-  - "pip install -r requirements.txt --use-mirrors"
+  - pip install -r requirements.txt --use-mirrors
 
 script:
-  - "make test"
+  - make test

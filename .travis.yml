@@ -22,8 +22,7 @@ before_install:
   - sudo service cassandra start
 
 # TODO: Need to improve this somehow (Cassandra has delay on start...)
-before_script:
-  - sleep 5
+before_script: sleep 10
 
 install:
   - pip install -r requirements.txt --use-mirrors

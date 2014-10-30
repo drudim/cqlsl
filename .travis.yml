@@ -1,7 +1,6 @@
 language: python
 
 env:
-  - CASSANDRA_VERSION=20
   - CASSANDRA_VERSION=21
 
 python:
@@ -24,7 +23,7 @@ before_install:
 
 before_script:
   - sleep 5  # TODO: Need to improve this somehow (Cassandra has delay on start...)
-  - "cqlsh -e \"create keyspace natural with replication={'class': 'SimpleStrategy', 'replication_factor': 1};\""
+  - "cqlsh -e \"create keyspace cqlsl with replication={'class': 'SimpleStrategy', 'replication_factor': 1};\""
 
 install:
   - pip install -r requirements.txt --use-mirrors

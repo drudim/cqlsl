@@ -10,8 +10,8 @@ log = logging.getLogger('cqlsl.queries')
 
 
 class SyncSession(object):
-    def __init__(self, keyspace='default'):
-        self.session = Cluster(['localhost']).connect(keyspace)
+    def __init__(self):
+        self.session = Cluster(['localhost']).connect()
         self.session.row_factory = dict_factory
 
     def execute(self, query, context=None):

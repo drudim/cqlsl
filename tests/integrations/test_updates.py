@@ -1,11 +1,12 @@
-from cqlsl.sessions import SyncSession
 from cqlsl.statements import update
-from tests.base import CqlslTestCase
+from base import BaseIntegrationTestCase
 
 
-class UpdatesTest(CqlslTestCase):
+__all__ = ['UpdatesTest']
+
+
+class UpdatesTest(BaseIntegrationTestCase):
     def setUp(self):
-        self.session = SyncSession(keyspace='cqlsl')
         self.session.execute(
             '''
             CREATE TABLE IF NOT EXISTS update_stmt_test (

@@ -1,11 +1,12 @@
-from cqlsl.sessions import SyncSession
 from cqlsl.statements import delete
-from tests.base import CqlslTestCase
+from base import BaseIntegrationTestCase
 
 
-class DeletesTest(CqlslTestCase):
+__all__ = ['DeletesTest']
+
+
+class DeletesTest(BaseIntegrationTestCase):
     def setUp(self):
-        self.session = SyncSession(keyspace='cqlsl')
         self.session.execute(
             '''
             CREATE TABLE IF NOT EXISTS delete_stmt_test (

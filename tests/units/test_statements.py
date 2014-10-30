@@ -1,12 +1,12 @@
 from cassandra.encoder import ValueSequence
 from cqlsl.statements import insert, delete, update, select
-from tests.base import CqlslTestCase
+from tests.base import BaseTestCase
 
 
 __all__ = ['StatementsTest']
 
 
-class StatementsTest(CqlslTestCase):
+class StatementsTest(BaseTestCase):
     def test_insert(self):
         stmt = insert('test_table').values(some_string='New title', some_number=1, some_numbers=[2, 3, 4])
 

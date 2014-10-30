@@ -1,16 +1,14 @@
 # coding=utf-8
 from uuid import uuid4
-from cqlsl.sessions import SyncSession
 from cqlsl.statements import insert
-from tests.base import CqlslTestCase
+from base import BaseIntegrationTestCase
 
 
 __all__ = ['InsertsTest']
 
 
-class InsertsTest(CqlslTestCase):
+class InsertsTest(BaseIntegrationTestCase):
     def setUp(self):
-        self.session = SyncSession(keyspace='cqlsl')
         self.session.execute(
             '''
             CREATE TABLE IF NOT EXISTS insert_stmt_test (

@@ -1,14 +1,12 @@
-from cqlsl.sessions import SyncSession
 from cqlsl.statements import select
-from tests.base import CqlslTestCase
+from base import BaseIntegrationTestCase
 
 
 __all__ = ['SelectsTest']
 
 
-class SelectsTest(CqlslTestCase):
+class SelectsTest(BaseIntegrationTestCase):
     def setUp(self):
-        self.session = SyncSession(keyspace='cqlsl')
         self.session.execute(
             '''
             CREATE TABLE IF NOT EXISTS select_stmt_test (

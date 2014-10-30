@@ -3,7 +3,10 @@ from unittest import TestCase
 import sys
 
 
-class CqlslTestCase(TestCase):
+__all__ = ['BaseTestCase']
+
+
+class BaseTestCase(TestCase):
     @classmethod
     def setUpClass(cls):
         logger = logging.getLogger('cqlsl')

@@ -1,4 +1,6 @@
-from cqlsl.sessions import SyncSession
+import os
+from cassandra.cluster import Cluster
+from cqlsl.sessions import Session
 from tests.base import BaseTestCase
 
 
@@ -6,7 +8,9 @@ __all__ = ['BaseIntegrationTestCase']
 
 
 class BaseIntegrationTestCase(BaseTestCase):
-    session = SyncSession()
+    session = Session(
+        Cluster([os.environ.get('CQLSL_TEST_CLUSTER', 'localhost')])
+    )
 
     @classmethod
     def setUpClass(cls):

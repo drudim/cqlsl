@@ -33,7 +33,7 @@ session.execute(
 )
 book_title = session.execute(
   select('books').fields('title').where(id=1)
-)[0]
+)[0]['title']
 session.execute(
   delete('books').fields('year').where(id=1)
 )

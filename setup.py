@@ -23,11 +23,12 @@ setup(
     author_email='drudim.ua@gmail.com',
     description='CQL for Python without any additional abstraction layers',
     long_description=__doc__,
+    keywords=['cassandra', 'cql'],
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",
-        "Programming Language :: Python",
+        "Programming Language :: Python :: 2.7",
         "Topic :: Database :: Front-Ends",
         "Operating System :: OS Independent",
     ],

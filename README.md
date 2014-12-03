@@ -1,5 +1,8 @@
 # CQLSL
-[![Build Status](https://travis-ci.org/drudim/cqlsl.svg?branch=master)](https://travis-ci.org/drudim/cqlsl)
+
+[![cqlsl build status](https://travis-ci.org/drudim/cqlsl.svg?branch=master)](https://travis-ci.org/drudim/cqlsl)
+[![cqlsl pypi version](http://img.shields.io/pypi/v/cqlsl.svg)](https://pypi.python.org/pypi/cqlsl)
+
 
 CQL for Python without any additional abstraction layers. Designed to be simple and fast tool for communication with Cassandra. CQLSL is something between native Cassandra driver (which is really awesome!) and ORM.
 

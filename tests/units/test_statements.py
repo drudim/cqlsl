@@ -34,6 +34,12 @@ class StatementsTest(BaseTestCase):
         self.assertEqual('SELECT * FROM test_table WHERE test_id = %s', stmt.query)
         self.assertEqual((1,), stmt.context)
 
+    def test_select_with_complex_where(self):
+        stmt = select('test_table').where(part_a=1, part_b=2, part_c=3)
+
+        self.assertEqual('SELECT * FROM test_table WHERE part_a = %s AND part_b = %s AND part_c = %s', stmt.query)
+        self.assertEqual((1, 2, 3), stmt.context)
+
     def test_select_with_limit(self):
         stmt = select('test_table').limit(10)
 
@@ -52,11 +58,11 @@ class StatementsTest(BaseTestCase):
         self.assertEqual('DELETE some_number, some_string FROM test_table WHERE some_id = %s', stmt.query)
         self.assertEqual((1,), stmt.context)
 
-    def test_delete_with_where(self):
-        stmt = delete('test_table').fields('some_number').where(some_id=1)
+    def test_delete_with_complex_where(self):
+        stmt = delete('test_table').fields('some_number').where(part_a__in=['a'], part_b=1)
 
-        self.assertEqual('DELETE some_number FROM test_table WHERE some_id = %s', stmt.query)
-        self.assertEqual((1,), stmt.context)
+        self.assertEqual('DELETE some_number FROM test_table WHERE part_a IN %s AND part_b = %s', stmt.query)
+        self.assertEqual((ValueSequence(['a']), 1), stmt.context)
 
     def test_delete_map_item(self):
         stmt = delete('test_table').fields(some_map__keys=('some_field',)).where(some_id=1)
@@ -76,11 +82,17 @@ class StatementsTest(BaseTestCase):
         self.assertEqual('DELETE some_list[%s], some_list[%s] FROM test_table WHERE some_id = %s', stmt.query)
         self.assertEqual((3, 4, 1), stmt.context)
 
-    def test_update_with_where(self):
+    def test_update(self):
         stmt = update('test_table').set(title='New title').where(id__in=['a', 'b', 'c'])
 
         self.assertEqual('UPDATE test_table SET title = %s WHERE id IN %s', stmt.query)
         self.assertEqual(('New title', ValueSequence(['a', 'b', 'c'])), stmt.context)
+
+    def test_update_with_complex_where(self):
+        stmt = update('test_table').set(title='New title').where(part_a=1, part_b__in=['a', 'b'])
+
+        self.assertEqual('UPDATE test_table SET title = %s WHERE part_a = %s AND part_b IN %s', stmt.query)
+        self.assertEqual(('New title', 1, ValueSequence(['a', 'b'])), stmt.context)
 
     def test_update_set_add(self):
         stmt = update('test_table').set(some_set__add={'a'}).where(some_id=1)

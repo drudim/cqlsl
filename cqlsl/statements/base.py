@@ -34,7 +34,7 @@ class WhereClauseMixin(object):
             else:
                 conditions.append('{} = %s'.format(field_name))
 
-        return ', '.join(conditions)
+        return ' AND '.join(conditions)
 
     def _get_where_context(self):
         context = []

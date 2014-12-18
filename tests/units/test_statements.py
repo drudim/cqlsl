@@ -40,6 +40,18 @@ class StatementsTest(BaseTestCase):
         self.assertEqual('SELECT * FROM test_table WHERE part_a = %s AND part_b = %s AND part_c = %s', stmt.query)
         self.assertEqual((1, 2, 3), stmt.context)
 
+    def test_select_with_where_gt_and_lt(self):
+        stmt = select('test_table').where(part_a__gt=1, part_b__lt=2)
+
+        self.assertEqual('SELECT * FROM test_table WHERE part_a > %s AND part_b < %s', stmt.query)
+        self.assertEqual((1, 2), stmt.context)
+
+    def test_select_with_where_gte_and_lte(self):
+        stmt = select('test_table').where(part_a__gte=1, part_b__lte=2)
+
+        self.assertEqual('SELECT * FROM test_table WHERE part_a >= %s AND part_b <= %s', stmt.query)
+        self.assertEqual((1, 2), stmt.context)
+
     def test_select_with_limit(self):
         stmt = select('test_table').limit(10)
 

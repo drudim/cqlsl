@@ -17,6 +17,14 @@ class BaseStatement(object):
 
 
 class WhereClauseMixin(object):
+    CONDITIONS = {
+        'in': 'IN',
+        'gt': '>',
+        'lt': '<',
+        'gte': '>=',
+        'lte': '<=',
+    }
+
     def __init__(self):
         self._where_conditions = {}
 
@@ -27,12 +35,17 @@ class WhereClauseMixin(object):
     def _get_where_clause(self):
         conditions = []
 
-        for field_name in self._where_conditions.keys():
-            if field_name.endswith('__in'):
-                field_name = field_name.replace('__in', '')
-                conditions.append('{} IN %s'.format(field_name))
-            else:
-                conditions.append('{} = %s'.format(field_name))
+        for expression in self._where_conditions.keys():
+            try:
+                field, condition = expression.rsplit('__', 1)
+            except ValueError:
+                field, condition = expression, None
+
+            if condition and condition not in self.CONDITIONS:
+                raise AttributeError('Unknown condition "{}"'.format(condition))
+
+            condition = self.CONDITIONS.get(condition, '=')
+            conditions.append('{field} {condition} %s'.format(field=field, condition=condition))
 
         return ' AND '.join(conditions)
 

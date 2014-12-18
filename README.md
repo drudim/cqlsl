@@ -47,3 +47,10 @@ session.execute(
 Under construction...
 ### Statements
 Under construction...
+
+## Change Log
+
+### v0.1.2 (2014/12/18 20:56 +00:00)
+- [#3](https://github.com/drudim/cqlsl/pull/3) Add ORDER BY and ALLOW FILTERING options (@drudim)
+- [#2](https://github.com/drudim/cqlsl/pull/2) Add support for comparisons in WHERE clause (@drudim)
+- [#1](https://github.com/drudim/cqlsl/pull/1) Add support for several conditions in WHERE clause (@drudim)

@@ -11,6 +11,7 @@ class SelectStatement(BaseStatement, WhereClauseMixin):
         self._fields_to_select = []
         self._fields_to_order_by = []
         self._limit = None
+        self._allow_filtering = False
 
     def fields(self, *fields_to_select):
         self._fields_to_select = fields_to_select
@@ -22,6 +23,10 @@ class SelectStatement(BaseStatement, WhereClauseMixin):
 
     def order_by(self, *fields_to_order_by):
         self._fields_to_order_by = fields_to_order_by
+        return self
+
+    def allow_filtering(self):
+        self._allow_filtering = True
         return self
 
     @property
@@ -39,6 +44,9 @@ class SelectStatement(BaseStatement, WhereClauseMixin):
 
         if self._limit:
             query_ += ' LIMIT %s'
+
+        if self._allow_filtering:
+            query_ += ' ALLOW FILTERING'
 
         return query_
 

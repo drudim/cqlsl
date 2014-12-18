@@ -58,6 +58,12 @@ class StatementsTest(BaseTestCase):
         self.assertEqual('SELECT * FROM test_table LIMIT %s', stmt.query)
         self.assertEqual((10,), stmt.context)
 
+    def test_select_with_ordering(self):
+        stmt = select('test_table').where(id=1).order_by('date', '-order').limit(10)
+
+        self.assertEqual('SELECT * FROM test_table WHERE id = %s ORDER BY date ASC, order DESC LIMIT %s', stmt.query)
+        self.assertEqual((1, 10), stmt.context)
+
     def test_delete(self):
         stmt = delete('test_table').where(some_id=1)
 

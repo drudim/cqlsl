@@ -1,4 +1,4 @@
-from base import BaseStatement, WhereClauseMixin
+from .base import BaseStatement, WhereClauseMixin
 
 
 __all__ = ['select']

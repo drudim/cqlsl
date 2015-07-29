@@ -53,7 +53,7 @@ class WhereClauseMixin(object):
         context = []
 
         for value in self._where_conditions.values():
-            if isinstance(value, collections.Iterable) and not isinstance(value, basestring):
+            if isinstance(value, collections.Iterable) and not isinstance(value, str):
                 value = ValueSequence(value)
 
             context.append(value)

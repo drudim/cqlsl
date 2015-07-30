@@ -1,6 +1,9 @@
 import collections
-from cqlsl.utils import sorted_kwargs
+
 from cassandra.query import ValueSequence
+
+from cqlsl.utils import sorted_kwargs
+
 
 try:
     basestring

@@ -2,6 +2,10 @@ import collections
 from cqlsl.utils import sorted_kwargs
 from cassandra.query import ValueSequence
 
+try:
+    basestring
+except NameError:
+    basestring = str
 
 class BaseStatement(object):
     def __init__(self, table_name):
@@ -53,7 +57,7 @@ class WhereClauseMixin(object):
         context = []
 
         for value in self._where_conditions.values():
-            if isinstance(value, collections.Iterable) and not isinstance(value, str):
+            if isinstance(value, collections.Iterable) and not isinstance(value, basestring):
                 value = ValueSequence(value)
 
             context.append(value)

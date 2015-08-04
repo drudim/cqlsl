@@ -51,7 +51,7 @@ Under construction...
 ## Change Log
 
 ### v0.2.0 (2015/08/05 00:15 +00:00)
-- [#5](https://github.com/drudim/cqlsl/pull/3) Add Python 3.4.x support (@mantzouratos @drudim)
+- [#5](https://github.com/drudim/cqlsl/pull/5) Add Python 3.4.x support (@mantzouratos @drudim)
 
 ### v0.1.2 (2014/12/18 20:56 +00:00)
 - [#3](https://github.com/drudim/cqlsl/pull/3) Add ORDER BY and ALLOW FILTERING options (@drudim)

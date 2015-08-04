@@ -1,6 +1,6 @@
 from itertools import chain
 from cqlsl.utils import sorted_kwargs
-from base import BaseStatement, WhereClauseMixin
+from .base import BaseStatement, WhereClauseMixin
 
 
 __all__ = ['delete']

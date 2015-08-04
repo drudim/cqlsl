@@ -57,7 +57,7 @@ class SelectsTest(BaseIntegrationTestCase):
         self.assertTypeRestored('test_list', ['a', 'b', 'c'])
 
     def test_select_set(self):
-        self.assertTypeRestored('test_set', {1, 2, 3})
+        self.assertTypeRestored('test_set', {1, 2, 3}, self.assertItemsEqual)
 
     def test_select_all(self):
         self.session.execute("INSERT INTO select_stmt_test (test_id, test_text, test_int) VALUES (1, 'some text', 5)")

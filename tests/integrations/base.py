@@ -9,7 +9,7 @@ __all__ = ['BaseIntegrationTestCase']
 
 class BaseIntegrationTestCase(BaseTestCase):
     session = Session(
-        Cluster([os.environ.get('CQLSL_TEST_CLUSTER', 'localhost')])
+        Cluster([os.environ.get('CQLSL_TEST_CLUSTER', 'localhost')], protocol_version=2)
     )
 
     @classmethod

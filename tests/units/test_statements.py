@@ -140,7 +140,10 @@ class StatementsTest(BaseTestCase):
         stmt = update('test_table').set(some_dict__update={'a': 1, 'b': 2}).where(some_id=1)
 
         self.assertEqual('UPDATE test_table SET some_dict[%s] = %s, some_dict[%s] = %s WHERE some_id = %s', stmt.query)
-        self.assertEqual(('a', 1, 'b', 2, 1), stmt.context)
+        try:
+            self.assertEqual(('a', 1, 'b', 2, 1), stmt.context)
+        except AssertionError:
+            self.assertEqual(('b', 2, 'a', 1, 1), stmt.context)
 
     def test_update_list_prepend(self):
         stmt = update('test_table').set(some_list__prepend=['a']).where(some_id=1)

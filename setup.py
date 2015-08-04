@@ -35,4 +35,5 @@ setup(
     packages=['cqlsl'],
     include_package_data=True,
     install_requires=['cassandra-driver >= 2.1.1'],
+    test_suite='tests',
 )

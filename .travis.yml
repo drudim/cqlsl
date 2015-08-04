@@ -1,10 +1,8 @@
 language: python
 
 env:
-  - CASSANDRA_VERSION=21
-
-python:
-  - 2.7
+  - CASSANDRA_VERSION=21 TOX_ENV=py27
+  - CASSANDRA_VERSION=21 TOX_ENV=py34
 
 before_install:
   - sudo echo "deb http://www.apache.org/dist/cassandra/debian ${CASSANDRA_VERSION}x main" | sudo tee -a /etc/apt/sources.list
@@ -26,7 +24,7 @@ before_install:
 before_script: sleep 10
 
 install:
-  - pip install -r requirements.txt --use-mirrors
+  - pip install tox
 
 script:
-  - make test
+  - tox -e $TOX_ENV

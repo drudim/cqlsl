@@ -1,5 +1,5 @@
 from cqlsl.statements import update
-from base import BaseIntegrationTestCase
+from .base import BaseIntegrationTestCase
 
 
 __all__ = ['UpdatesTest']
@@ -54,18 +54,18 @@ class UpdatesTest(BaseIntegrationTestCase):
     def test_update_set_add(self):
         self.session.execute("INSERT INTO update_stmt_test (test_id, test_set) VALUES (1, {'a'})")
 
-        self.assertEqual({'a'}, self.session.execute('SELECT test_set FROM update_stmt_test')[0].get('test_set'))
+        self.assertItemsEqual({'a'}, self.session.execute('SELECT test_set FROM update_stmt_test')[0].get('test_set'))
         self.session.execute(update('update_stmt_test').set(test_set__add={'b'}).where(test_id=1))
-        self.assertEqual(
+        self.assertItemsEqual(
             {'a', 'b'}, self.session.execute('SELECT test_set FROM update_stmt_test')[0].get('test_set')
         )
 
     def test_update_set_remove(self):
         self.session.execute("INSERT INTO update_stmt_test (test_id, test_set) VALUES (1, {'a', 'b'})")
 
-        self.assertEqual({'a', 'b'}, self.session.execute('SELECT test_set FROM update_stmt_test')[0].get('test_set'))
+        self.assertItemsEqual({'a', 'b'}, self.session.execute('SELECT test_set FROM update_stmt_test')[0].get('test_set'))
         self.session.execute(update('update_stmt_test').set(test_set__remove={'a'}).where(test_id=1))
-        self.assertEqual({'b'}, self.session.execute('SELECT test_set FROM update_stmt_test')[0].get('test_set'))
+        self.assertItemsEqual({'b'}, self.session.execute('SELECT test_set FROM update_stmt_test')[0].get('test_set'))
 
     def test_update_dict_update(self):
         self.session.execute(

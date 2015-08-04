@@ -1,7 +1,7 @@
 import os
 from cassandra.cluster import Cluster
 from cqlsl.sessions import Session
-from tests.base import BaseTestCase
+from ..base import BaseTestCase
 
 
 __all__ = ['BaseIntegrationTestCase']
@@ -9,7 +9,7 @@ __all__ = ['BaseIntegrationTestCase']
 
 class BaseIntegrationTestCase(BaseTestCase):
     session = Session(
-        Cluster([os.environ.get('CQLSL_TEST_CLUSTER', 'localhost')])
+        Cluster([os.environ.get('CQLSL_TEST_CLUSTER', 'localhost')], protocol_version=2)
     )
 
     @classmethod

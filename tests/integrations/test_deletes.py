@@ -1,5 +1,5 @@
 from cqlsl.statements import delete
-from base import BaseIntegrationTestCase
+from .base import BaseIntegrationTestCase
 
 
 __all__ = ['DeletesTest']

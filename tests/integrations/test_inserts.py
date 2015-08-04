@@ -1,7 +1,7 @@
 # coding=utf-8
 from uuid import uuid4
 from cqlsl.statements import insert
-from base import BaseIntegrationTestCase
+from .base import BaseIntegrationTestCase
 
 
 __all__ = ['InsertsTest']
@@ -62,4 +62,4 @@ class InsertsTest(BaseIntegrationTestCase):
         self.assertTypeRestored('test_list', ['a', 'b', 'c'])
 
     def test_insert_set(self):
-        self.assertTypeRestored('test_set', {1, 2, 3})
+        self.assertTypeRestored('test_set', {1, 2, 3}, self.assertItemsEqual)

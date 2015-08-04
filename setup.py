@@ -29,10 +29,12 @@ setup(
         "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3.4",
         "Topic :: Database :: Front-Ends",
         "Operating System :: OS Independent",
     ],
     packages=['cqlsl'],
     include_package_data=True,
     install_requires=['cassandra-driver >= 2.1.1'],
+    test_suite='tests',
 )

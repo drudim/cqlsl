@@ -1,7 +1,7 @@
 import os
 from cassandra.cluster import Cluster
 from cqlsl.sessions import Session
-from tests.base import BaseTestCase
+from ..base import BaseTestCase
 
 
 __all__ = ['BaseIntegrationTestCase']

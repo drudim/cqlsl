@@ -1,7 +1,7 @@
 # coding=utf-8
 from uuid import uuid4
 from cqlsl.statements import insert
-from base import BaseIntegrationTestCase
+from .base import BaseIntegrationTestCase
 
 
 __all__ = ['InsertsTest']

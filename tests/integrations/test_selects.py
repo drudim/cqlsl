@@ -1,5 +1,5 @@
 from cqlsl.statements import select
-from base import BaseIntegrationTestCase
+from .base import BaseIntegrationTestCase
 
 
 __all__ = ['SelectsTest']
@@ -33,7 +33,7 @@ class SelectsTest(BaseIntegrationTestCase):
         self.assertEqual(1, len(rows))
         self.assertEqual(1, len(rows[0].keys()))
 
-        restored_value = rows[0].values()[0]
+        restored_value = list(rows[0].values())[0]
 
         if special_assert:
             special_assert(expected_value, restored_value)

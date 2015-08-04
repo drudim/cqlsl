@@ -1,6 +1,6 @@
 from cassandra.encoder import ValueSequence
 from cqlsl.statements import insert, delete, update, select
-from tests.base import BaseTestCase
+from ..base import BaseTestCase
 
 
 __all__ = ['StatementsTest']
